@@ -1,0 +1,22 @@
+#!/usr/bin/env sh
+
+set -e
+
+PKG="$1"
+if [ -z "$PKG" ]; then
+  >&2 echo "Usage: $0 PACKAGE_NAME"
+  exit 1
+fi
+
+HERE="$(cd "$(dirname "$(readlink -f "$0")")" && pwd)"
+REPO="$(cd "$HERE/.." && pwd)"
+TEST="$(cd "$REPO/tests" && pwd)"
+SRC="$(cd "$REPO/$PKG" && pwd)"
+BIN="$(cd "$REPO/bin" && pwd)"
+
+set -x
+flake8 "$SRC" && \
+flake8 "$TEST" && \
+flake8 "$BIN"
+
+exit $?

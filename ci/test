@@ -1,0 +1,9 @@
+#!/usr/bin/env sh
+
+HERE="$(cd "$(dirname "$(readlink -f "$0")")" && pwd)"
+REPO="$(cd "$HERE/.." && pwd)"
+cd "$REPO"
+
+pytest
+
+exit $?

@@ -1,0 +1,10 @@
+#!/usr/bin/env sh
+
+PKG=awsr
+
+./ci/style awsr && \
+./ci/test && \
+./ci/build && \
+./ci/testwheel awsr
+
+exit $?

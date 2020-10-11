@@ -1,0 +1,41 @@
+#!/usr/bin/env sh
+
+PKG="$1"
+if [ -z "$PKG" ]; then
+  >&2 echo "Usage: $0 PACKAGE_NAME"
+  exit 1
+fi
+
+HERE="$(cd "$(dirname "$(readlink -f "$0")")" && pwd)"
+REPO="$(cd "$HERE/.." && pwd)"
+cd "$REPO"
+
+TMPCTXT="/tmp/$(cd /tmp && mktemp -d "${PKG}_XXXXXXX")"
+echo "Context $TMPCTXT"
+mkdir -p "$TMPCTXT/dist"
+
+WHEEL="dist/$(ls -1 dist | sort -r | head -n 1)"
+
+if [ "$WHEEL" == "dist/" ]; then
+    >&2 echo "No wheel found"
+    rm -rf "$TMPCTXT"
+    exit 1
+fi
+
+cp "$WHEEL" "$TMPCTXT/dist"
+
+cd "$TMPCTXT"
+python -m venv venv
+. venv/bin/activate
+python -m pip install -U pip || :
+
+python -m pip install -U "$WHEEL"
+if "$PKG" -h; then
+    RESULT="Success"
+else
+    RESULT="Failure"
+fi
+cd - >/dev/null
+rm -rf "$TMPCTXT"
+[ "$RESULT" == "Success" ]
+exit $?
