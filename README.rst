@@ -12,14 +12,16 @@ AWS Rotate - Rotate Access Key
 Usage
 -----
 
-::
+See help::
+
     awsr -h
 
 --------
 Examples
 --------
 
-::
+Shell commands::
+
     # Rotate user johndoe access key quietly in profile default
     awsr johndoe
 
