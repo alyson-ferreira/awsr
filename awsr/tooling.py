@@ -1,23 +1,54 @@
-from typing import Callable
+"""Helpers"""
+
+from typing import Tuple
 
 
-def slots_to_dict(o: object) -> dict:
-    return dict(map(lambda k: (k, getattr(o, k)), o.__slots__))
+def key_value_str_block(content: dict) -> str:
+    """Converts a dictionary to a string representation suitable for ini files.
+
+    Args:
+        d: The dictionary to be processed.
+
+    Returns:
+        A string in a key value format using equal sign and new lines to
+        separate pairs.
+    """
+    return "\n".join([f"{k} = {v}" for k, v in content.items()])
 
 
-def key_value_str_block(d: dict, str_converter: Callable = str) -> str:
-    return "\n".join([
-        f"{str_converter(k)} = {str_converter(v)}"
-        for k, v in d.items()
-    ])
+def ini_section(props: dict, section_name="", section_name_prop="") -> str:
+    """Creates a ini section.
 
-
-def inify_object(o: object, section_name="", section_name_attribute="") -> str:
+    Args:
+        props: The dictionary for ini properties.
+        section_name: The ini section name.
+        section_name_prop: The attribute of the object that can be used
+                                for section name
+    Returns:
+        A ini section representing the object
+    """
     if not section_name:
-        if section_name_attribute:
-            section_name = getattr(o, section_name_attribute)
+        if section_name_prop:
+            section_name = props.get(section_name_prop)
         else:
-            section_name = type(o).__name__
+            section_name = "default"
 
-    content: dict = slots_to_dict(o) if hasattr(o, "__slots__") else vars(o)
-    return f"[{section_name}]\n{key_value_str_block(content)}"
+    content: str = key_value_str_block(props)
+    return f"[{section_name}]\n{content}"
+
+
+def equal_splitter(content: str) -> Tuple[str, str]:
+    """Gets the key before the equal sign and the value after, then returns
+    them as a string tuple.
+
+    Args:
+        content: The string to be broken into a tuple
+
+    Returns:
+        String tuple container key and value
+    """
+    pos = content.index("=")
+    return (
+        content[:pos].strip(),
+        content[pos + 1 :].strip(),
+    )

@@ -1,0 +1,41 @@
+---
+version: 2
+plan:
+  project-key: AF
+  key: AWSR
+  name: AWSR
+
+stages:
+  - Run:
+    - Resolve Dependencies
+
+Resolve Dependencies:
+  tasks:
+    - script:
+      - apt-get update
+      - apt-get install python3
+      - python3 -m pip install --upgrade pip
+      - python3 -m pip install tox
+      - tar -czf awsr.tgz awsr/*
+  artifacts:
+    - name: tgz
+      pattern: awsr.tgz
+# ---
+# version: 2
+# deployment:
+#   name: AWSR
+#   source-plan: AWSR
+
+# release-naming:
+#   next-version-name: 0.${bamboo.buildNumber}
+
+# environments:
+#   - QA
+
+# QA:
+#   tasks:
+#     - clean
+#     - artifact-download:
+#         destination: /
+#     - script:
+#         - tar -tzf /awsr.tgz
