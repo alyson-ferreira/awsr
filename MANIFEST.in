@@ -1,0 +1,1 @@
+include requirements.txt awsr/__init__.py
